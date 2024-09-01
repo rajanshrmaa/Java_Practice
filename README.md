@@ -7,6 +7,5 @@
     <title>LinkedList</title>
 </head>
 <body>
-    <p>Hello, <span style="color: red;">welcome</span> to our website!</p>
 </body>
 </html>
