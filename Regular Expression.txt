@@ -1,0 +1,293 @@
+---------------------------------------------------------------------------------REGULAR EXPRESSION-------------------------------------------------------------------------------------------------------------------
+
+/**This Java program implements a user registration system with email, phone number, and password validations using regular expressions. It allows users to exit the registration process at any time by typing "exit".
+
+*****************************************************************************************************************************************
+package pack;
+
+import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+/**
+ * This class provides a simple user registration system using regular expressions
+ * for validating email addresses, phone numbers, and passwords.
+ */
+public class RegularExpression {
+
+    // Define the PatternMatcher interface
+    interface PatternMatcher {
+        boolean valid(String input);
+    }
+
+    // Inner class for Email validation
+    static class EmailValidator implements PatternMatcher {
+        private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        private final Pattern pattern = Pattern.compile(EMAIL_REGEX);
+
+        @Override
+        public boolean valid(String input) {
+            Matcher matcher = pattern.matcher(input);
+            return matcher.matches();
+        }
+    }
+
+    // Inner class for Phone Number validation
+    static class PhoneNumberValidator implements PatternMatcher {
+        private static final String PHONE_REGEX = "^\\+?[0-9]{10,15}$";
+        private final Pattern pattern = Pattern.compile(PHONE_REGEX);
+
+        @Override
+        public boolean valid(String input) {
+            Matcher matcher = pattern.matcher(input);
+            return matcher.matches();
+        }
+    }
+
+    // Inner class for Password validation
+    static class PasswordValidator implements PatternMatcher {
+        private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{16}$";
+        private final Pattern pattern = Pattern.compile(PASSWORD_REGEX);
+
+        @Override
+        public boolean valid(String input) {
+            Matcher matcher = pattern.matcher(input);
+            return matcher.matches();
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Create instances of the validators
+        PatternMatcher emailValidator = new EmailValidator();
+        PatternMatcher phoneNumberValidator = new PhoneNumberValidator();
+        PatternMatcher passwordValidator = new PasswordValidator();
+
+        boolean registrationSuccess = false;
+
+        while (!registrationSuccess) {
+            try {
+                System.out.println("***** Simple User Registration System using Regular Expressions *****");
+                System.out.println("_____________________________________________________________________");
+                System.out.println("Type 'exit' at any prompt to cancel the registration process.");
+
+                // Get user email
+                System.out.println("Enter your email address:");
+                String email = scanner.nextLine();
+                if (email.equalsIgnoreCase("exit")) {
+                    System.out.println("Registration process canceled.");
+                    break;
+                }
+                if (!emailValidator.valid(email)) {
+                    System.out.println("Invalid email address. Please enter a valid email.");
+                    continue;
+                }
+
+                // Get user phone number
+                System.out.println("Enter your phone number:");
+                String phoneNumber = scanner.nextLine();
+                if (phoneNumber.equalsIgnoreCase("exit")) {
+                    System.out.println("Registration process canceled.");
+                    break;
+                }
+                if (!phoneNumberValidator.valid(phoneNumber)) {
+                    System.out.println("Invalid phone number. Please enter a valid phone number.");
+                    continue;
+                }
+
+                // Get user password
+                System.out.println("Enter your password (16 characters with uppercase, lowercase, number, and special character):");
+                String password = scanner.nextLine();
+                if (password.equalsIgnoreCase("exit")) {
+                    System.out.println("Registration process canceled.");
+                    break;
+                }
+                if (!passwordValidator.valid(password)) {
+                    System.out.println("Invalid password. Password must be 16 characters long and include uppercase letters, lowercase letters, numbers, and special characters.");
+                    continue;
+                }
+
+                // If all validations pass
+                System.out.println("Registration successful!");
+                registrationSuccess = true;
+
+            } catch (Exception e) {
+                System.out.println("An error occurred: " + e.getMessage());
+            }
+        }
+
+        scanner.close();
+    }
+}
+
+--------------------------------------------------------------------------------------------------OUTPUT------------------------------------------------------------------------------------------------------------------------
+***** Simple User Registration System using Regular Expressions *****
+_____________________________________________________________________
+Type 'exit' at any prompt to cancel the registration process.
+Enter your email address:
+abc123@gmail.com
+Enter your phone number:
+1234567890
+Enter your password (16 characters with uppercase, lowercase, number, and special character):
+Password@1234567
+Registration successful!
+
+******************************************************************************************************************************************
+
+Certainly! Let's go through the RegularExpression class code line by line, explaining the purpose of each section, keyword, and method in two-line explanations:
+
+Imports and Class Declaration
+java
+Copy code
+package pack;
+Defines the package in which the class is located, organizing the code and avoiding naming conflicts.
+java
+Copy code
+import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+Imports required classes: Scanner for user input and Pattern/Matcher for regex operations.
+java
+Copy code
+public class RegularExpression {
+Declares the class named RegularExpression, which contains the registration system logic.
+PatternMatcher Interface
+java
+Copy code
+interface PatternMatcher {
+    boolean valid(String input);
+}
+Defines an interface PatternMatcher with a single method valid to be implemented by validator classes for checking input validity.
+EmailValidator Class
+java
+Copy code
+static class EmailValidator implements PatternMatcher {
+    private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+    private final Pattern pattern = Pattern.compile(EMAIL_REGEX);
+Declares EmailValidator as a static inner class implementing PatternMatcher. Defines a regex pattern for validating email addresses.
+java
+Copy code
+    @Override
+    public boolean valid(String input) {
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
+    }
+}
+Implements the valid method, using Matcher to check if the input matches the email regex pattern.
+PhoneNumberValidator Class
+java
+Copy code
+static class PhoneNumberValidator implements PatternMatcher {
+    private static final String PHONE_REGEX = "^\\+?[0-9]{10,15}$";
+    private final Pattern pattern = Pattern.compile(PHONE_REGEX);
+Defines PhoneNumberValidator as a static inner class for phone number validation, with a regex pattern for validating phone numbers.
+java
+Copy code
+    @Override
+    public boolean valid(String input) {
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
+    }
+}
+Implements the valid method, using Matcher to ensure the input conforms to the phone number regex pattern.
+PasswordValidator Class
+java
+Copy code
+static class PasswordValidator implements PatternMatcher {
+    private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{16}$";
+    private final Pattern pattern = Pattern.compile(PASSWORD_REGEX);
+Creates PasswordValidator as a static inner class to validate passwords using a regex that requires 16 characters with various character types.
+java
+Copy code
+    @Override
+    public boolean valid(String input) {
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
+    }
+}
+Implements the valid method, checking if the password input matches the specified regex for complexity and length.
+Main Method
+java
+Copy code
+public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+Entry point of the program, creating a Scanner object to read user input from the console.
+java
+Copy code
+    PatternMatcher emailValidator = new EmailValidator();
+    PatternMatcher phoneNumberValidator = new PhoneNumberValidator();
+    PatternMatcher passwordValidator = new PasswordValidator();
+Instantiates validators for email, phone number, and password by creating objects of respective classes.
+java
+Copy code
+    boolean registrationSuccess = false;
+Initializes a flag to track the success of the registration process, starting as false.
+java
+Copy code
+    while (!registrationSuccess) {
+        try {
+Starts a loop that continues until registration is successful, with exception handling for user input.
+java
+Copy code
+            System.out.println("***** Simple User Registration System using Regular Expressions *****");
+            System.out.println("_____________________________________________________________________");
+            System.out.println("Type 'exit' at any prompt to cancel the registration process.");
+Displays user instructions and the title of the registration system, including how to exit.
+java
+Copy code
+            System.out.println("Enter your email address:");
+            String email = scanner.nextLine();
+            if (email.equalsIgnoreCase("exit")) {
+                System.out.println("Registration process canceled.");
+                break;
+            }
+            if (!emailValidator.valid(email)) {
+                System.out.println("Invalid email address. Please enter a valid email.");
+                continue;
+            }
+Prompts for email input and validates it. Exits if "exit" is entered; otherwise, it checks if the email is valid.
+java
+Copy code
+            System.out.println("Enter your phone number:");
+            String phoneNumber = scanner.nextLine();
+            if (phoneNumber.equalsIgnoreCase("exit")) {
+                System.out.println("Registration process canceled.");
+                break;
+            }
+            if (!phoneNumberValidator.valid(phoneNumber)) {
+                System.out.println("Invalid phone number. Please enter a valid phone number.");
+                continue;
+            }
+Prompts for phone number input and validates it. Exits if "exit" is entered; otherwise, it checks if the phone number is valid.
+java
+Copy code
+            System.out.println("Enter your password (16 characters with uppercase, lowercase, number, and special character):");
+            String password = scanner.nextLine();
+            if (password.equalsIgnoreCase("exit")) {
+                System.out.println("Registration process canceled.");
+                break;
+            }
+            if (!passwordValidator.valid(password)) {
+                System.out.println("Invalid password. Password must be 16 characters long and include uppercase letters, lowercase letters, numbers, and special characters.");
+                continue;
+            }
+Prompts for password input and validates it. Exits if "exit" is entered; otherwise, it checks if the password meets the criteria.
+java
+
+            System.out.println("Registration successful!");
+            registrationSuccess = true;
+Indicates successful registration if all validations pass and updates the flag to exit the loop.
+java
+
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+    }
+    scanner.close();
+}
+Handles exceptions that occur during input or validation, displaying an error message. Closes the Scanner object after the loop ends.
+
+
+
+
