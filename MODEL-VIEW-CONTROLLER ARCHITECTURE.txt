@@ -1,0 +1,200 @@
+***********************************************MODEL-VIEW-CONTROLLER ARCHITECTURE******************************************************************
+
+MVC - MVC stands for Model-View-Controller, which is a software architectural pattern commonly used in web application development.
+
+Use Case 1: Web Application (Online Shopping Site)
+
+Use Case 2: Social Media Application
+
+***************************************************************************************************************************************
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Servlet implementation class Food_cart
+ * This is the Controller class in MVC.
+ */
+
+package food_cart;
+
+import java.io.IOException;
+import java.sql.SQLException; // Import for SQLException
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/Food_cart")
+public class Food_cart extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    /** 
+     * Handles GET requests.
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            List<Food> foodItems = FoodCartDbUtil.getFoodList(); // Fetch data from the model (database)
+            request.setAttribute("foodItems", foodItems); // Set the data as a request attribute
+        } 
+        catch (ClassNotFoundException | SQLException e) { // Handle exceptions
+            e.printStackTrace();
+            // Optionally, set an error message attribute for the JSP
+            request.setAttribute("errorMessage", "Unable to retrieve food items. Please try again later.");
+        }
+        
+        // Forward the request to the JSP page (View)
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/foodMenu.jsp");
+        dispatcher.forward(request, response);
+    }
+}
+
+******************************************************************************************************************************************
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * POJO class representing a Food item.
+ * This is the Model class in MVC.
+ */
+
+
+package food_cart;
+
+public class Food {
+
+    private int item_id;
+    private String item;
+    private float price;
+
+    public Food(int item_id, String item, float price) {
+        this.item_id = item_id;
+        this.item = item;
+        this.price = price;
+    }
+
+    public int getItem_id() {
+        return item_id;
+    }
+
+    public void setItem_id(int item_id) {
+        this.item_id = item_id;
+    }
+
+    public String getItem() {
+        return item;
+    }
+
+    public void setItem(String item) {
+        this.item = item;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+}
+
+******************************************************************************************************************************************
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// THIS IS A CLASS IS USED FOR DATABASE CONNECTIVITY 
+
+package food_cart;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Utility class for database operations related to Food items.
+ * This is part of the Model in MVC.
+ */
+public class FoodCartDbUtil {
+
+    public static List<Food> getFoodList() throws ClassNotFoundException, SQLException {
+        List<Food> food = new ArrayList<>();
+        final String URL = "jdbc:mysql://localhost:8083/food_cart?useSSL=false";
+        final String USER = "root";
+        final String PASSWORD = "password@123"; // Change to your actual password 
+
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM food_cart")) {
+
+            while (rs.next()) {
+                int item_id = rs.getInt("item_id");
+                String item = rs.getString("item");
+                float price = rs.getFloat("price");
+                Food f = new Food(item_id, item, price);
+                food.add(f);
+            }
+        }
+        
+        return food;
+    }
+}
+
+*************************************************************************************************************************************************************************************
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+<title>Menu of Food Items</title>
+</head>
+<body>
+    <h1>Food Menu</h1>
+
+    <!-- Display error message if present -->
+    <c:if test="${not empty errorMessage}">
+        <p style="color: red;">${errorMessage}</p>
+    </c:if>
+
+    <!-- Display food items table if present -->
+    <c:if test="${not empty foodItems}">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="item" items="${foodItems}">
+                    <tr>
+                        <td>${item.item_id}</td>
+                        <td>${item.item}</td>
+                        <td>${item.price}</td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </c:if>
+
+    <!-- Message when no food items are available -->
+    <c:if test="${empty foodItems}">
+        <p>No food items available.</p>
+    </c:if>
+</body>
+</html>
+
+*************************************************************************************************************************************************************************
+---------------------------------------------------------------------------------------------------------- OUTPUT---------------------------------------------------------------------------------------------------------------------------------------------------------------------DISPLAY 
+Display the Table items from database like we have item_id, item, price from the food_cart table.
+
